@@ -35,6 +35,75 @@
   .nav>div:last-child{display:flex;gap:8px}
 }
 
+
+/* Reference-match pass: refined mobile composition and premium lighting */
+body{background:radial-gradient(ellipse at 79% 3%,#29205e 0,transparent 39%),radial-gradient(ellipse at 0 47%,#07384a70 0,transparent 38%),#080a12}
+.top{background:rgba(7,9,16,.88);border-bottom-color:#ffffff10}
+.logo{box-shadow:0 8px 30px #62e6ff22}
+.btn{background:linear-gradient(110deg,#62e6ff 0%,#8b9bff 57%,#a68cff 100%);box-shadow:0 8px 30px #7b88ff15}
+.pill{padding:7px 13px;letter-spacing:1.35px}
+h1{line-height:1.08;text-wrap:balance}
+.lead{line-height:1.9}
+.showcase{isolation:isolate}
+.orbit{box-shadow:0 0 100px #685dff19,inset 0 0 80px #685dff0c}
+.orbcore{box-shadow:0 24px 90px #625fff2b,0 0 60px #62e6ff19}
+.floatcard{box-shadow:0 18px 55px #0005;border-color:#ffffff22}
+.bot{background:linear-gradient(150deg,#141b2c 0%,#0c101b 100%);box-shadow:0 12px 34px #0002}
+.bot:focus-within,.bot:hover{box-shadow:0 18px 48px #0004,0 0 0 1px #62e6ff18}
+.field{background:#0c101b}
+.safety{line-height:1.8}
+.modal{background:radial-gradient(ellipse at 100% 0%,#29205e66,transparent 45%),linear-gradient(145deg,#151b2c,#0b0e18)}
+@media(max-width:850px){
+ .hero{grid-template-columns:1fr;gap:8px;padding-top:48px}
+ .showcase{min-height:285px;margin-top:2px}
+ .orbit{width:260px;height:260px}
+ .orbcore{width:130px;height:130px}
+}
+@media(max-width:560px){
+ .wrap{width:calc(100% - 46px)}
+ .nav{min-height:90px;height:auto;padding:12px 0;gap:8px;flex-wrap:wrap}
+ .nav .brand{font-size:20px;gap:9px}
+ .nav .logo{width:38px;height:38px;border-radius:13px}
+ .nav>div:last-child{width:100%;display:grid!important;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:10px!important}
+ .nav>div:last-child .btn{width:100%;min-width:0;min-height:48px;padding:8px 10px;font-size:12px;line-height:1.45;border-radius:15px}
+ .hero{padding:42px 0 25px;gap:10px}
+ .pill{font-size:10px;letter-spacing:1.05px;padding:7px 11px}
+ h1{font-size:clamp(43px,10.2vw,57px);letter-spacing:-2.7px;line-height:1.08;margin:24px 0 19px}
+ .lead{font-size:14px;line-height:1.9}
+ .heroactions{display:grid;grid-template-columns:1fr 1.3fr;gap:10px;margin-top:25px}
+ .heroactions .btn{min-height:54px;padding:12px 10px;font-size:13px;line-height:1.45;border-radius:16px}
+ .micro{margin-top:24px;gap:9px 13px;font-size:11px}
+ .showcase{min-height:265px;margin-top:8px}
+ .orbit{width:230px;height:230px}
+ .orbcore{width:118px;height:118px;border-radius:35px;font-size:50px}
+ .floatcard{padding:10px 12px;border-radius:15px}
+ .floatcard strong{font-size:13px}
+ .floatcard small{font-size:10px}
+ .fc1{top:2px;right:-2px}
+ .fc2{bottom:5px;left:-2px}
+ .fc3{right:-2px;bottom:36px}
+ .section{padding:25px 0 45px}
+ .sectionhead h2{font-size:27px}
+ .toolbar{display:grid;grid-template-columns:minmax(0,1fr) 125px;gap:8px}
+ .search{min-width:0}
+ .field{min-height:47px;padding:11px 12px;font-size:13px}
+ .search .field{padding-left:38px}
+ .select{min-width:0;width:100%}
+ .filters{gap:7px}
+ .filter{padding:8px 11px}
+ .grid{gap:12px}
+ .bot{padding:17px;min-height:0;border-radius:19px}
+ .avatar{width:46px;height:46px}
+ .bot h3{font-size:16px}
+ .desc{line-height:1.8}
+ .counter{font-size:11px}
+ .safety{padding:14px;font-size:12px}
+ .footer{padding:25px 0 32px}
+ .footnote{line-height:1.8}
+ .modalback{padding:8px;align-items:flex-end}
+ .modal{padding:20px 17px;max-height:88dvh;border-radius:23px 23px 13px 13px}
+}
+
 </style>
 </head>
 <body>
@@ -62,7 +131,7 @@
 </section>
 <section id="about" class="section" style="padding-top:0"><div class="safety"><b>เกี่ยวกับ BotVote</b><br>พื้นที่ชุมชนสำหรับค้นหาและแนะนำบอท Discord อย่างเป็นระเบียบ เว็บไซต์นี้เป็นไดเรกทอรีชุมชนอิสระ ไม่ใช่เว็บไซต์ทางการของ Discord และไม่ได้รับการรับรองจาก Discord</div></section>
 </main>
-<footer class="footer"><div class="wrap"><div class="footrow"><div><div class="footbrand">B<span>otVote</span> <span style="color:var(--muted);font-weight:500">/ Official Site</span></div><div>Discover bots. Build better communities.</div></div><a class="open" href="#explore">กลับไปสำรวจ ↑</a></div><div class="footnote">BotVote เป็นไดเรกทอรีชุมชนอิสระ ข้อมูลรายการ รีวิว และคะแนนที่บันทึกในเวอร์ชันนี้จัดเก็บเฉพาะในเบราว์เซอร์ของอุปกรณ์ที่ใช้งาน จึงยังไม่ซิงก์ข้ามผู้ใช้หรืออุปกรณ์</div></div></footer>
+<footer class="footer"><div class="wrap"><div class="footrow"><div><div class="footbrand">B<span>otVote</span> <span style="color:var(--muted);font-weight:500">/ Official Site</span></div><div>Discover bots. Build better communities.</div></div><a class="open" href="#explore">กลับไปสำรวจ ↑</a></div><div class="footnote">BotVote เป็นไดเรกทอรีชุมชนอิสระ รายการบอทและคะแนนถูกใจใช้ฐานข้อมูล Supabase ตามการตั้งค่าของโปรเจกต์ บอทที่ส่งเข้ามาจะปรากฏต่อสาธารณะหลังผู้ดูแลอนุมัติ</div></div></footer>
 <div class="modalback" id="modalback" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><div class="modalhead"><div><div class="kicker">JOIN THE DIRECTORY</div><h2 id="modalTitle">แนะนำบอทของคุณ</h2></div><button class="close" type="button" id="closeModal" aria-label="ปิดหน้าต่าง">×</button></div><p>แบ่งปันข้อมูลสาธารณะเพื่อให้คนอื่นค้นพบบอทของคุณ ไม่ต้องกรอก Token</p>
 <form id="botForm">
 <div class="formrow"><label for="botName">ชื่อบอท *</label><input class="field" id="botName" required maxlength="60" placeholder="เช่น Shikimori"></div>
