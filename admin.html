@@ -1,5 +1,30 @@
 <!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090b14"><title>BotVote Admin Dashboard</title><style>
 :root{color-scheme:dark;--bg:#080a12;--line:#293249;--text:#f4f6ff;--muted:#a0abc2;--cyan:#62e6ff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0,#252054,transparent 38%),var(--bg);color:var(--text);font:15px/1.6 system-ui,"Noto Sans Thai",sans-serif}.wrap{width:min(1050px,calc(100% - 28px));margin:auto}header{border-bottom:1px solid #ffffff18;padding:15px 0}.row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.brand{font-size:21px;font-weight:900}.brand b,a{color:var(--cyan)}a{text-decoration:none}.card{border:1px solid var(--line);background:linear-gradient(145deg,#141b2b,#0d111d);border-radius:15px;padding:17px;margin:17px 0}.muted{color:var(--muted)}.notice,.item,.stat{border:1px solid var(--line);border-radius:11px;padding:12px;margin:9px 0;overflow-wrap:anywhere}.notice{background:#62e6ff0b;color:var(--muted)}.btn{padding:10px 14px;border-radius:10px;border:1px solid #62e6ff66;background:linear-gradient(110deg,#62e6ff,#aaa0ff);color:#07101a;font-weight:850;cursor:pointer}.ghost{background:#ffffff08;color:var(--text);border-color:var(--line)}.approve{background:#8ef0c0;border-color:#8ef0c0}.reject{background:#ff9aa8;border-color:#ff9aa8}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.stat strong{display:block;color:var(--cyan);font-size:23px}input,select{background:#090e19;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px;font:inherit}.toolbar{display:flex;gap:8px;flex-wrap:wrap}.toolbar input{flex:1;min-width:160px}.small{font-size:12px}.hidden{display:none!important}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+/* Premium responsive polish */
+:root{--radius:20px}
+body{min-height:100vh;background-color:#070910;background-image:radial-gradient(ellipse at 85% -5%,#29205d88,transparent 42%),radial-gradient(ellipse at 0 55%,#07344745,transparent 36%)}
+header{position:sticky;top:0;z-index:5;background:#080a12df;backdrop-filter:blur(18px);border-bottom:1px solid #ffffff12}
+.card{border-radius:20px;box-shadow:0 18px 55px #0002;padding:clamp(16px,3vw,26px)}
+.btn{min-height:44px;transition:transform .18s,filter .18s}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+input,select,textarea{min-height:44px;max-width:100%}
+.notice,.item,.stat{border-radius:14px}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+@media(max-width:600px){
+  .wrap{width:calc(100% - 24px)}
+  header{padding:10px 0}
+  .brand{font-size:19px}
+  .row{gap:9px}
+  .card{margin:12px 0;padding:16px}
+  h1{font-size:clamp(29px,8vw,40px);line-height:1.15}
+  h2{font-size:22px}
+  .toolbar{display:grid;grid-template-columns:1fr}
+  .toolbar input,.toolbar select,.toolbar button{width:100%;min-width:0}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .btn{white-space:normal;overflow-wrap:anywhere}
+}
+
 </style></head><body><header><div class="wrap row"><div class="brand">B<span style="color:white">ot</span><b>Vote</b> <small class="muted">/ Admin</small></div><div class="row"><a href="./">เว็บหลัก</a><button class="btn ghost" id="auth">เข้าสู่ระบบ</button></div></div></header><main class="wrap"><section class="card"><h1>Admin Dashboard</h1><p class="muted">จัดการคำขอและสถิติ BotVote</p><div id="state" class="notice">กำลังตรวจสอบสิทธิ์…</div></section><div id="dash" class="hidden"><section class="card stats"><div class="stat">บอททั้งหมด<strong id="total">0</strong></div><div class="stat">รออนุมัติ<strong id="pending">0</strong></div><div class="stat">อนุมัติแล้ว<strong id="approved">0</strong></div><div class="stat">ยอดถูกใจ<strong id="likes">0</strong></div></section><section class="card"><h2>คำขอเพิ่มบอท</h2><div class="toolbar"><input id="search" placeholder="ค้นหาชื่อหรือ Client ID"><select id="filter"><option value="all">ทุกสถานะ</option><option value="pending">รออนุมัติ</option><option value="approved">อนุมัติแล้ว</option><option value="rejected">ไม่อนุมัติ</option></select><button class="btn ghost" id="refresh">รีเฟรช</button></div><div id="list"></div></section></div><section class="card"><h2>ตั้งค่าสิทธิ์ก่อนใช้งาน</h2><p class="muted">ต้องรัน SQL migration และกำหนด app_metadata.role = admin ให้บัญชีผู้ดูแลก่อน ปุ่มอนุมัติจะใช้งานไม่ได้หาก RLS ไม่อนุญาต</p><a href="https://github.com/chloerangersonic0909-cmd/botvote-th-/blob/main/supabase/admin-rls.sql">เปิดไฟล์ SQL ตั้งค่าสิทธิ์ ↗</a> · <a href="https://supabase.com/dashboard/project/crgjfdbdccpqumqaiuyq/sql/new">Supabase SQL Editor ↗</a></section></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
 const sb=window.supabase.createClient('https://crgjfdbdccpqumqaiuyq.supabase.co','sb_publishable_DuR9mJQlYCqCGBwF3W0JbQ_8CdqJr9H');let session=null,rows=[];const $=x=>document.getElementById(x),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const label=s=>({pending:'รออนุมัติ',approved:'อนุมัติแล้ว',rejected:'ไม่อนุมัติ'}[s]||s);
