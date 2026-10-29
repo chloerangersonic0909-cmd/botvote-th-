@@ -64,10 +64,10 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 function notify(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(notify.timer);notify.timer=setTimeout(()=>$('toast').classList.remove('show'),3200)}
 function categoryFor(b){const tags=(b.tags||[]).join(' ').toLowerCase();if(/เพลง|music|song/.test(tags))return'เพลง';if(/ดูแลบ้าน|moderation|security|ป้องกัน/.test(tags))return'ดูแลบ้าน';if(/เกม|game/.test(tags))return'เกม';if(/ai|เอไอ|ปัญญาประดิษฐ์/.test(tags))return'AI';return'อื่นๆ'}
 function updateAuth(){ $('authBtn').textContent=session?'ออกจากระบบ':'เข้าสู่ระบบ'; }
-async function loadVotes(){voted.clear();if(!sb||!session)return;const {data,error}=await sb.from('bot_votes').select('bot_id').eq('user_id',session.user.id);if(!error)(data||[]).forEach(v=>voted.add(v.bot_id))}
+async function loadVotes(){voted.clear();if(!sb||!session)return;const {data,error}=await sb.from('botvote_votes').select('bot_id').eq('user_id',session.user.id);if(!error)(data||[]).forEach(v=>voted.add(v.bot_id))}
 async function loadBots(){
  if(!sb){bots=[];render();notify('ต้องตั้งค่า Supabase anon/publishable key ใน index.html ก่อนเปิดฐานข้อมูลกลาง');return}
- const {data,error}=await sb.from('bots').select('id,name,client_id,invite_url,description,tags,created_at,likes_count').eq('status','approved').order('created_at',{ascending:false});
+ const {data,error}=await sb.from('botvote_bots').select('id,name,client_id,invite_url,description,tags,created_at,likes_count').eq('status','approved').order('created_at',{ascending:false});
  if(error){console.error(error);notify('โหลดบอทไม่สำเร็จ ตรวจสอบการตั้งค่า SQL/RLS ใน Supabase');bots=[];render();return}
  bots=(data||[]).map(b=>({id:b.id,name:b.name,clientId:b.client_id,invite:b.invite_url,desc:b.description,tags:b.tags||[],created:new Date(b.created_at).getTime(),likes:b.likes_count||0,reviews:[]}));await loadVotes();render()
 }
@@ -99,7 +99,7 @@ $('botForm').addEventListener('submit',async e=>{
  if(url.protocol!=='https:'||!['discord.com','www.discord.com','discordapp.com','www.discordapp.com'].includes(url.hostname)||!url.pathname.includes('/oauth2/authorize')){notify('กรุณาใช้ลิงก์เชิญ OAuth2 จาก Discord');return}
  if(!/^\d{15,24}$/.test(clientId)){notify('Client ID ควรเป็นตัวเลข 15–24 หลัก');return}
  const tags=$('botTags').value.split(',').map(s=>s.trim()).filter(Boolean).slice(0,5);
- const {error}=await sb.from('bots').insert({owner_id:session.user.id,name,client_id:clientId,invite_url:invite,description,tags,status:'pending'});
+ const {error}=await sb.from('botvote_bots').insert({owner_id:session.user.id,name,client_id:clientId,invite_url:invite,description,tags,status:'pending'});
  if(error){notify(error.code==='23505'?'Client ID นี้ถูกส่งแล้ว':'บันทึกไม่สำเร็จ: '+error.message);return}
  e.target.reset();closeModal();notify('ส่งบอทแล้ว รอผู้ดูแลอนุมัติก่อนเผยแพร่');await loadBots()
 });
@@ -108,7 +108,7 @@ $('grid').addEventListener('click',async e=>{
  if(!session){notify('เข้าสู่ระบบก่อนกดใจ เพื่อป้องกันการโหวตซ้ำ');authFlow();return}
  const b=bots.find(x=>x.id===vote.dataset.id);if(!b)return;if(voted.has(b.id)){notify('คุณกดใจบอทนี้ไปแล้ว');return}
  vote.disabled=true;
- const {error}=await sb.from('bot_votes').insert({bot_id:b.id,user_id:session.user.id});
+ const {error}=await sb.from('botvote_votes').insert({bot_id:b.id,user_id:session.user.id});
  if(error){if(error.code==='23505'){voted.add(b.id);notify('คุณกดใจบอทนี้ไปแล้ว')}else notify('กดใจไม่สำเร็จ: '+error.message);await loadBots();return}
  voted.add(b.id);notify('ส่งคะแนนถูกใจแล้ว');await loadBots()
 });
