@@ -133,6 +133,25 @@ h1{font-weight:950;letter-spacing:-2.8px}
 .footer{margin-top:44px}
 @media(max-width:560px){.wrap{width:calc(100% - 28px)}.nav{min-height:70px}.hero{padding-top:38px}.section{padding-top:25px}.sectionhead{padding-bottom:12px}.toolbar{padding:10px;border-radius:15px}.grid{gap:13px}.bot{min-height:0;padding:18px;border-radius:18px}.bot h3{font-size:17px}.desc{margin:12px 0}.cardfoot{padding-top:12px}.heroactions{grid-template-columns:1fr 1fr}.showcase{min-height:245px}}
 
+
+/* Button placement: consistent alignment on desktop and mobile */
+.nav{align-items:center}
+.nav>div:last-child{display:flex;align-items:center;justify-content:flex-end;gap:10px}
+.heroactions{align-items:center}
+.cardfoot .votes{align-items:center}
+.reviewbox form{display:grid;grid-template-columns:1fr;gap:9px;margin-top:10px}
+.reviewbox form .field{margin:0;min-width:0}
+.reviewbox form .btn{justify-self:start;min-width:132px}
+.actions{align-items:center}
+@media(max-width:560px){
+ .nav>div:last-child{width:100%;display:grid;grid-template-columns:1fr 1.15fr;gap:9px}
+ .nav>div:last-child .btn{width:100%;min-width:0}
+ .heroactions{display:grid;grid-template-columns:1fr 1fr}
+ .heroactions .btn{width:100%;min-width:0}
+ .reviewbox form .btn{width:100%;justify-self:stretch}
+ .actions .btn{min-width:0}
+}
+
 </style>
 </head>
 <body>
