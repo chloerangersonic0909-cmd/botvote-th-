@@ -251,7 +251,7 @@ async function authFlow(){
 /* Guided AI-style submission assistant. This is deterministic client-side guidance, not a connected LLM. */
 const aiSteps=[
  {key:'name',label:'ชื่อบอท',prompt:'ชื่อบอทของคุณคืออะไร?',placeholder:'เช่น Shikimori',type:'text',max:60,validate:v=>v.length>=1&&v.length<=60?'':'กรอกชื่อบอท 1–60 ตัวอักษร'},
- {key:'clientId',label:'Client ID',prompt:'กรอก Discord Application / Client ID (ตัวเลขสาธารณะ)',placeholder:'ตัวเลข Client ID 15–24 หลัก',type:'text',max:24,validate:v=>/^\\d{15,24}$/.test(v)?'':'Client ID ต้องเป็นตัวเลข 15–24 หลัก'},
+ {key:'clientId',label:'Client ID',prompt:'กรอก Discord Application / Client ID (ตัวเลขสาธารณะ)',placeholder:'ตัวเลข Client ID 15–24 หลัก',type:'text',max:24,validate:v=>/^\d{15,24}$/.test(v)?'':'Client ID ต้องเป็นตัวเลข 15–24 หลัก'},
  {key:'invite',label:'ลิงก์เชิญ',prompt:'วางลิงก์เชิญบอทจาก Discord',placeholder:'https://discord.com/oauth2/authorize?...',type:'url',max:500,validate:v=>{try{const u=new URL(v);return u.protocol==='https:'&&['discord.com','www.discord.com','discordapp.com','www.discordapp.com'].includes(u.hostname)&&u.pathname.includes('/oauth2/authorize')?'':'ใช้ลิงก์ OAuth2 เชิญบอทจาก Discord เท่านั้น'}catch{return'ลิงก์ไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง'} }},
  {key:'description',label:'คำอธิบาย',prompt:'บอทของคุณทำอะไรได้บ้าง? (จำเป็นสำหรับหน้ารายการ)',placeholder:'อธิบายความสามารถของบอท ไม่เกิน 500 ตัวอักษร',type:'textarea',max:500,validate:v=>v.length>=1&&v.length<=500?'':'กรอกคำอธิบาย 1–500 ตัวอักษร'},
  {key:'tags',label:'หมวดหมู่',prompt:'ระบุหมวดหมู่ของบอท (ไม่บังคับ)',placeholder:'เพลง, ดูแลบ้าน, เกม, AI',type:'text',max:100,optional:true,validate:v=>''}
