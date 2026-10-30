@@ -188,14 +188,16 @@ async function loadBots(){
  if(!sb){bots=[];render();notify('ต้องตั้งค่า Supabase anon/publishable key ใน index.html ก่อนเปิดฐานข้อมูลกลาง');return}
  const {data,error}=await sb.from('botvote_bots').select('id,name,client_id,invite_url,description,tags,created_at,likes_count').eq('status','approved').order('created_at',{ascending:false});
  if(error){console.error(error);notify('โหลดบอทไม่สำเร็จ ตรวจสอบการตั้งค่า SQL/RLS ใน Supabase');bots=[];render();return}
- bots=(data||[]).map(b=>({id:b.id,name:b.name,clientId:b.client_id,invite:b.invite_url,desc:b.description,tags:b.tags||[],created:new Date(b.created_at).getTime(),likes:b.likes_count||0,reviews:[]}));await loadVotes();render()
+ bots=(data||[]).map(b=>({id:b.id,name:b.name,clientId:b.client_id,invite:b.invite_url,desc:b.description,tags:b.tags||[],created:new Date(b.created_at).getTime(),likes:b.likes_count||0,reviews:[]}));
+ if(bots.length){const ids=bots.map(b=>b.id);const {data:reviews,error:reviewError}=await sb.from('botvote_reviews').select('id,bot_id,user_id,rating,comment,created_at').in('bot_id',ids).order('created_at',{ascending:false});if(!reviewError){for(const review of (reviews||[])){const bot=bots.find(x=>x.id===review.bot_id);if(bot)bot.reviews.push(review)}}}
+ await loadVotes();render()
 }
 function render(){
  const q=$('search').value.trim().toLowerCase(),sort=$('sort').value;
  let shown=bots.filter(b=>(b.name+' '+b.desc+' '+(b.tags||[]).join(' ')).toLowerCase().includes(q)&&(activeCategory==='ทั้งหมด'||categoryFor(b)===activeCategory||(b.tags||[]).some(t=>t.toLowerCase()===activeCategory.toLowerCase())));
  if(sort==='liked')shown.sort((a,b)=>(b.likes||0)-(a.likes||0));else if(sort==='name')shown.sort((a,b)=>a.name.localeCompare(b.name,'th'));else shown.sort((a,b)=>b.created-a.created);
- $('botCount').textContent=bots.length;$('reviewCount').textContent='—';$('resultCount').textContent=shown.length+' รายการ';
- $('grid').innerHTML=shown.length?shown.map(b=>'<article class="bot"><div class="bothead"><div class="avatar">🤖</div><div><h3>'+esc(b.name)+'</h3><div class="id">CLIENT ID · '+esc(b.clientId)+'</div></div></div><p class="desc">'+esc(b.desc)+'</p><div class="tags">'+(b.tags||[]).map(t=>'<span class="tag">'+esc(t)+'</span>').join('')+'</div><div class="cardfoot"><div class="votes"><button class="vote '+(voted.has(b.id)?'active':'')+'" data-vote="like" data-id="'+esc(b.id)+'" '+(voted.has(b.id)?'disabled':'')+' aria-label="ถูกใจ" title="'+(voted.has(b.id)?'คุณกดใจแล้ว':'กดใจหนึ่งครั้ง')+'">♡ '+(b.likes||0)+(voted.has(b.id)?' ✓':'')+'</button></div><a class="open" href="'+esc(b.invite)+'" target="_blank" rel="noopener noreferrer">เชิญบอท ↗</a></div></article>').join(''):'<div class="empty"><strong>ยังไม่มีบอทที่เผยแพร่</strong>เข้าสู่ระบบและส่งบอทเพื่อเริ่มสร้างรายการชุมชน<button class="btn" id="emptyAdd" style="margin-top:15px">＋ แนะนำบอท</button></div>';
+ $('botCount').textContent=bots.length;$('reviewCount').textContent=bots.reduce((n,b)=>n+b.reviews.length,0);$('resultCount').textContent=shown.length+' รายการ';
+ $('grid').innerHTML=shown.length?shown.map(b=>'<article class="bot"><div class="bothead"><div class="avatar">🤖</div><div><h3>'+esc(b.name)+'</h3><div class="id">CLIENT ID · '+esc(b.clientId)+'</div></div></div><p class="desc">'+esc(b.desc)+'</p><div class="tags">'+(b.tags||[]).map(t=>'<span class="tag">'+esc(t)+'</span>').join('')+'</div><div class="cardfoot"><div class="votes"><button class="vote '+(voted.has(b.id)?'active':'')+'" data-vote="like" data-id="'+esc(b.id)+'" '+(voted.has(b.id)?'disabled':'')+' aria-label="ถูกใจ" title="'+(voted.has(b.id)?'คุณกดใจแล้ว':'กดใจหนึ่งครั้ง')+'">♡ '+(b.likes||0)+(voted.has(b.id)?' ✓':'')+'</button></div><a class="open" href="'+esc(b.invite)+'" target="_blank" rel="noopener noreferrer">เชิญบอท ↗</a></div><details class="reviewbox"><summary>⭐ รีวิว ('+b.reviews.length+')</summary><div class="reviews">'+(b.reviews.length?b.reviews.map(r=>'<p><b>'+('★'.repeat(r.rating)+'☆'.repeat(5-r.rating))+'</b><br>'+esc(r.comment)+'<br><small>'+new Date(r.created_at).toLocaleDateString('th-TH')+'</small></p>').join(''):'<p>ยังไม่มีรีวิว เป็นคนแรกที่แบ่งปันความคิดเห็นได้เลย</p>')+'</div><form data-review-form="'+esc(b.id)+'"><select class="field" name="rating" aria-label="คะแนนรีวิว"><option value="5">★★★★★ · 5</option><option value="4">★★★★☆ · 4</option><option value="3">★★★☆☆ · 3</option><option value="2">★★☆☆☆ · 2</option><option value="1">★☆☆☆☆ · 1</option></select><textarea class="field" name="comment" maxlength="500" required placeholder="เขียนรีวิวสั้น ๆ (1–500 ตัวอักษร)"></textarea><button class="btn" type="submit">ส่งรีวิว</button></form></details></article>').join(''):'<div class="empty"><strong>ยังไม่มีบอทที่เผยแพร่</strong>เข้าสู่ระบบและส่งบอทเพื่อเริ่มสร้างรายการชุมชน<button class="btn" id="emptyAdd" style="margin-top:15px">＋ แนะนำบอท</button></div>';
  const empty=$('emptyAdd');if(empty)empty.onclick=openModal;
 }
 function openModal(){if(!session){notify('เข้าสู่ระบบด้วยอีเมลก่อน เพื่อส่งบอท');authFlow();return}$('modalback').classList.add('show');setTimeout(()=>$('botName').focus(),50)}
@@ -221,6 +223,12 @@ $('botForm').addEventListener('submit',async e=>{
  const {error}=await sb.from('botvote_bots').insert({owner_id:session.user.id,name,client_id:clientId,invite_url:invite,description,tags,status:'pending'});
  if(error){notify(error.code==='23505'?'Client ID นี้ถูกส่งแล้ว':'บันทึกไม่สำเร็จ: '+error.message);return}
  e.target.reset();closeModal();notify('ส่งบอทแล้ว รอผู้ดูแลอนุมัติก่อนเผยแพร่');await loadBots()
+});
+$('grid').addEventListener('submit',async e=>{
+ const form=e.target.closest('[data-review-form]');if(!form)return;e.preventDefault();if(!session){notify('เข้าสู่ระบบก่อนเขียนรีวิว');authFlow();return}
+ const botId=form.dataset.reviewForm,rating=Number(form.elements.rating.value),comment=form.elements.comment.value.trim();if(!comment||comment.length>500){notify('กรุณาเขียนรีวิว 1–500 ตัวอักษร');return}
+ const button=form.querySelector('button[type="submit"]');button.disabled=true;const {error}=await sb.from('botvote_reviews').insert({bot_id:botId,user_id:session.user.id,rating,comment});
+ if(error){button.disabled=false;notify(error.code==='23505'?'คุณรีวิวบอทนี้ไปแล้ว':'ส่งรีวิวไม่สำเร็จ: '+error.message);return}notify('ส่งรีวิวแล้ว ขอบคุณที่แบ่งปันความคิดเห็น');await loadBots();
 });
 $('grid').addEventListener('click',async e=>{
  const vote=e.target.closest('[data-vote="like"]');if(!vote)return;
