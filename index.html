@@ -239,7 +239,10 @@ h1{font-weight:950;letter-spacing:-2.8px}
 const SUPABASE_URL='https://crgjfdbdccpqumqaiuyq.supabase.co';
 const SUPABASE_ANON_KEY='sb_publishable_DuR9mJQlYCqCGBwF3W0JbQ_8CdqJr9H';
 const configured=SUPABASE_ANON_KEY!=='PASTE_YOUR_SUPABASE_ANON_KEY_HERE';
-const sb=configured&&window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
+const AUTH_REDIRECT_URL='https://chloerangersonic0909-cmd.github.io/botvote-th-/';
+const sb=configured&&window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{
+ auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit'}
+}):null;
 let bots=[],session=null,activeCategory='ทั้งหมด',voted=new Set();
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -266,11 +269,41 @@ function render(){
 function openModal(){if(!session){notify('เข้าสู่ระบบด้วยอีเมลก่อน เพื่อส่งบอท');authFlow();return}$('modalback').classList.add('show');aiReset();setTimeout(()=>$('aiInput').focus(),50)}
 function closeModal(){$('modalback').classList.remove('show')}
 async function authFlow(){
- if(!sb){notify('ตั้งค่า Supabase anon/publishable key ก่อน');return}
- if(session){if(confirm('ต้องการออกจากระบบหรือไม่?')){await sb.auth.signOut();session=null;updateAuth();await loadBots();notify('ออกจากระบบแล้ว')}return}
- const email=prompt('กรอกอีเมลเพื่อรับลิงก์เข้าสู่ระบบ BotVote');if(!email||!email.includes('@'))return;
- const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname}});
- if(error){notify('ส่งลิงก์เข้าสู่ระบบไม่สำเร็จ: '+error.message);return}notify('ส่งลิงก์เข้าสู่ระบบไปยังอีเมลแล้ว กรุณาเปิดลิงก์นั้น')
+ if(!sb){notify('ระบบเข้าสู่ระบบยังตั้งค่าไม่ครบ กรุณาตรวจสอบ Supabase URL และ Publishable key');return}
+ if(session){
+  if(confirm('ต้องการออกจากระบบหรือไม่?')){
+   const {error}=await sb.auth.signOut();
+   if(error){notify('ออกจากระบบไม่สำเร็จ: '+error.message);return}
+   session=null;updateAuth();await loadBots();await loadCommunityVideos();notify('ออกจากระบบแล้ว')
+  }
+  return
+ }
+ const email=prompt('กรอกอีเมลที่ใช้งานได้ เพื่อรับลิงก์เข้าสู่ระบบ BotVote');
+ if(!email)return;
+ const cleanEmail=email.trim();
+ if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(cleanEmail)){notify('รูปแบบอีเมลไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง');return}
+ try{
+  const {error}=await sb.auth.signInWithOtp({
+   email:cleanEmail,
+   options:{emailRedirectTo:AUTH_REDIRECT_URL,shouldCreateUser:true}
+  });
+  if(error){
+   console.error('BotVote sign-in error:',error);
+   const message=error.message||'ไม่ทราบสาเหตุ';
+   if(/redirect|url configuration|allow list/i.test(message)){
+    notify('Supabase ยังไม่อนุญาตลิงก์กลับเว็บไซต์ กรุณาเพิ่ม '+AUTH_REDIRECT_URL+' ใน Authentication → URL Configuration → Redirect URLs');
+   }else if(/rate limit|too many requests/i.test(message)){
+    notify('ส่งอีเมลบ่อยเกินไป กรุณารอสักครู่แล้วลองใหม่');
+   }else{
+    notify('ส่งลิงก์เข้าสู่ระบบไม่สำเร็จ: '+message);
+   }
+   return
+  }
+  notify('ส่งลิงก์เข้าสู่ระบบไปที่ '+cleanEmail+' แล้ว ให้เปิดอีเมลบนอุปกรณ์นี้และแตะลิงก์')
+ }catch(error){
+  console.error('BotVote sign-in exception:',error);
+  notify('เชื่อมต่อระบบเข้าสู่ระบบไม่ได้ ตรวจสอบอินเทอร์เน็ตแล้วลองอีกครั้ง')
+ }
 }
 
 /* Guided AI-style submission assistant. This is deterministic client-side guidance, not a connected LLM. */
