@@ -1,33 +1,38 @@
 # BotVote
 
-เว็บไซต์ภาษาไทยสำหรับค้นหาและแนะนำบอท Discord — โฮสต์ด้วย GitHub Pages และใช้ Supabase เป็นฐานข้อมูลกลาง
+เว็บไซต์ภาษาไทยสำหรับค้นหา แนะนำ โหวต และรีวิวบอท Discord — GitHub Pages + Supabase
 
 ## เว็บไซต์
-https://chloerangersonic0909-cmd.github.io/botvote-th-/
+- หน้าเว็บหลัก: https://chloerangersonic0909-cmd.github.io/botvote-th-/
+- Developer Portal: https://chloerangersonic0909-cmd.github.io/botvote-th-/developer.html
+- Admin Dashboard: https://chloerangersonic0909-cmd.github.io/botvote-th-/admin.html
 
-## ตั้งค่าฐานข้อมูลกลาง (ทำครั้งเดียว)
+## ตั้งค่าฐานข้อมูล
 
-1. เปิด Supabase Dashboard ของโปรเจกต์ที่ต้องการใช้
-2. ไปที่ **SQL Editor** แล้วเปิดไฟล์ [supabase/botvote-schema.sql](supabase/botvote-schema.sql) ใน repository นี้
-3. คัดลอก SQL ทั้งหมดไปวางใน SQL Editor แล้วกด **Run**.
-4. ใน Supabase ไปที่ **Project Settings → API** (หรือ **Data API / API Keys** ตามหน้าตา Dashboard) แล้วคัดลอก **publishable/anon key** ของโปรเจกต์ ห้ามใช้ `service_role` หรือ secret key ในหน้าเว็บ
-5. เปิด `index.html` ใน GitHub แล้วกด Edit (ดินสอ) ค้นหา `PASTE_YOUR_SUPABASE_ANON_KEY_HERE` แล้วแทนที่ด้วย publishable/anon key ที่คัดลอกมา จากนั้น Commit changes
-6. ใน Supabase ไปที่ **Authentication → URL Configuration** แล้วเพิ่ม URL นี้ใน **Redirect URLs**:
+1. เปิด [Supabase SQL Editor](https://supabase.com/dashboard/project/crgjfdbdccpqumqaiuyq/sql/new).
+2. รัน `supabase/botvote-schema.sql` ก่อน เพื่อสร้างตารางบอทและคะแนนโหวต
+3. รัน `supabase/production-hardening.sql` เพื่อสร้างตารางรีวิวและกำหนดสิทธิ์การอ่าน/แก้ไขหลังบ้านให้ถูกต้อง
+4. ตั้งค่า **Authentication → URL Configuration → Redirect URLs** ให้มี:
    `https://chloerangersonic0909-cmd.github.io/botvote-th-/**`
-7. รอ GitHub Pages deploy เสร็จ แล้วเปิดเว็บใหม่ เข้าสู่ระบบด้วยอีเมลเพื่อส่งบอทและกดใจ
+5. ตั้งค่า **Authentication → Rate Limits / SMTP** ให้เหมาะสม หากการส่งอีเมลยืนยันถูกจำกัด
+6. กำหนดสิทธิ์แอดมินใน Supabase Dashboard ที่ Authentication → Users โดยใช้ `app_metadata.role = admin` ผ่านเครื่องมือที่เชื่อถือได้ ห้ามใช้ `user_metadata` สำหรับสิทธิ์
+7. รัน `supabase/admin-rls.sql` เพื่อให้แอดมินอ่านคำขอทั้งหมดและอัปเดตได้เฉพาะคอลัมน์สถานะ
+8. ออกจากระบบแล้วเข้าสู่ระบบใหม่ เพื่อรับ JWT ที่มี role ล่าสุด
 
-## ระบบปัจจุบัน
-- รายการบอทที่อนุมัติแล้วอ่านได้จากฐานข้อมูลกลาง
-- การส่งบอทต้องเข้าสู่ระบบด้วยลิงก์ยืนยันอีเมล และรายการใหม่จะเป็น `pending` จนกว่าผู้ดูแลจะอนุมัติ
-- การกดใจต้องเข้าสู่ระบบ
-- ตาราง `botvote_votes` มีข้อจำกัด unique ที่ `(bot_id, user_id)` และนโยบาย RLS เพื่อป้องกันผู้ใช้คนเดิมกดใจบอทเดิมซ้ำ แม้จะพยายามเรียก API โดยตรง
-- ไม่ขอ Bot Token หรือ service_role key
-- ออกแบบรองรับมือถือและภาษาไทย
+## ฟังก์ชันที่โค้ดรองรับ
+- ค้นหา/กรอง/เรียงบอทที่ได้รับอนุมัติ
+- ส่งคำขอบอทหลังเข้าสู่ระบบ โดยเริ่มเป็น `pending`
+- โหวตได้ครั้งเดียวต่อผู้ใช้ต่อบอท ด้วย unique constraint และ RLS
+- รีวิวคะแนน 1–5 ดาวและข้อความ โดยจำกัดหนึ่งรีวิวต่อผู้ใช้ต่อบอท (ต้องรัน migration)
+- Developer Portal แสดงรายการและสถิติของบอทเจ้าของบัญชี
+- Admin Dashboard สำหรับตรวจสอบและอนุมัติ/ปฏิเสธคำขอ
 
-## อนุมัติบอท
-เพื่อป้องกันสแปม รายการที่ส่งใหม่จะยังไม่แสดงสาธารณะโดยอัตโนมัติ ผู้ดูแลสามารถตรวจสอบแถวในตาราง `botvote_bots` ผ่าน Supabase Table Editor และเปลี่ยน `status` จาก `pending` เป็น `approved` เมื่อแน่ใจว่าข้อมูลถูกต้อง
+## ความปลอดภัย
+- ใช้เฉพาะ Supabase publishable/anon key ฝั่งหน้าเว็บ และเปิด RLS
+- ห้ามใส่ `service_role` หรือ secret key ใน HTML/JavaScript สาธารณะ
+- ห้ามให้ผู้ใช้ส่ง Bot Token, รหัสผ่าน Discord หรือ secret
+- การจำกัดหนึ่งโหวตต่อบัญชีไม่ได้ป้องกันการสร้างหลายบัญชีได้ทั้งหมด
+- GitHub Pages เป็น static hosting; งานที่ต้องใช้ความลับหรือการตรวจสอบฝั่งเซิร์ฟเวอร์ต้องทำผ่าน Supabase/RLS/Edge Functions ไม่ใช่ซ่อน key ใน JavaScript
 
-## หมายเหตุด้านความปลอดภัย
-publishable/anon key ออกแบบมาให้ใช้ใน frontend ได้เมื่อเปิดใช้ RLS และ policies ตาม schema นี้แล้ว ห้ามเผยแพร่ `service_role` key หรือ secret key เด็ดขาด การใช้ email OTP ช่วยผูกคะแนนกับบัญชีผู้ใช้ แต่ไม่ได้ป้องกันคนสร้างหลายบัญชีได้อย่างสมบูรณ์
-
-สร้างเว็บไซต์โดย ChatGPT · OpenAI
+## หมายเหตุ
+การแก้โค้ดและ commit ไม่ได้ยืนยันว่าการตั้งค่า Supabase ได้รันแล้วหรือว่า GitHub Pages deploy เสร็จ ต้องตรวจสอบใน Supabase และทดสอบจริงหลัง deploy
