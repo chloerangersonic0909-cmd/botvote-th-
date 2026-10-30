@@ -241,9 +241,16 @@ const SUPABASE_URL='https://crgjfdbdccpqumqaiuyq.supabase.co';
 const SUPABASE_ANON_KEY='sb_publishable_DuR9mJQlYCqCGBwF3W0JbQ_8CdqJr9H';
 const configured=SUPABASE_ANON_KEY!=='PASTE_YOUR_SUPABASE_ANON_KEY_HERE';
 const AUTH_REDIRECT_URL='https://chloerangersonic0909-cmd.github.io/botvote-th-/';
-const sb=configured&&window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{
- auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit'}
-}):null;
+let sb=null;
+try{
+ if(configured&&window.supabase){
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{
+   auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit'}
+  });
+ }
+}catch(error){
+ console.error('BotVote Supabase initialization failed:',error);
+}
 let bots=[],session=null,activeCategory='ทั้งหมด',voted=new Set();
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
