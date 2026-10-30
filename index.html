@@ -207,7 +207,8 @@ h1{font-weight:950;letter-spacing:-2.8px}
  <div class="video-note">วิดีโอที่ส่งใหม่จะรอการอนุมัติก่อนเผยแพร่ ต้องเข้าสู่ระบบก่อนส่ง กดถูกใจ หรือให้คะแนน</div>
  <div id="videoGrid" class="video-grid"><div class="empty"><strong>กำลังโหลดวิดีโอ…</strong></div></div>
 </section>
-\n<section id="about" class="section" style="padding-top:0"><div class="safety"><b>เกี่ยวกับ BotVote</b><br>พื้นที่ชุมชนสำหรับค้นหาและแนะนำบอท Discord อย่างเป็นระเบียบ เว็บไซต์นี้เป็นไดเรกทอรีชุมชนอิสระ ไม่ใช่เว็บไซต์ทางการของ Discord และไม่ได้รับการรับรองจาก Discord</div></section>
+
+<section id="about" class="section" style="padding-top:0"><div class="safety"><b>เกี่ยวกับ BotVote</b><br>พื้นที่ชุมชนสำหรับค้นหาและแนะนำบอท Discord อย่างเป็นระเบียบ เว็บไซต์นี้เป็นไดเรกทอรีชุมชนอิสระ ไม่ใช่เว็บไซต์ทางการของ Discord และไม่ได้รับการรับรองจาก Discord</div></section>
 </main>
 <footer class="footer"><div class="wrap"><div class="footrow"><div><div class="footbrand">B<span>otVote</span> <span style="color:var(--muted);font-weight:500">/ Official Site</span></div><div>Discover bots. Build better communities.</div></div><a class="open" href="#explore">กลับไปสำรวจ ↑</a></div><div class="footnote">BotVote เป็นไดเรกทอรีชุมชนอิสระ รายการบอทและคะแนนถูกใจใช้ฐานข้อมูล Supabase ตามการตั้งค่าของโปรเจกต์ บอทที่ส่งเข้ามาจะปรากฏต่อสาธารณะหลังผู้ดูแลอนุมัติ</div></div></footer>
 <div class="modalback" id="modalback" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><div class="modalhead"><div><div class="kicker">JOIN THE DIRECTORY</div><h2 id="modalTitle">แนะนำบอทของคุณ</h2></div><button class="close" type="button" id="closeModal" aria-label="ปิดหน้าต่าง">×</button></div><p>แบ่งปันข้อมูลสาธารณะเพื่อให้คนอื่นค้นพบบอทของคุณ ไม่ต้องกรอก Token</p>
@@ -414,7 +415,8 @@ $('videoGrid').addEventListener('change',async e=>{
  if(error){notify('บันทึกคะแนนไม่สำเร็จ: '+error.message);return}
  notify('บันทึกคะแนน '+rating+'/5 แล้ว');await loadCommunityVideos();
 });
-\nasync function init(){
+
+async function init(){
  if(!sb){render();loadCommunityVideos();notify('ขั้นตอนต่อไป: เพิ่ม Supabase anon/publishable key ใน index.html');return}
  const {data}=await sb.auth.getSession();session=data.session;updateAuth();
  sb.auth.onAuthStateChange((_event,newSession)=>{session=newSession;updateAuth();setTimeout(()=>{loadBots();loadCommunityVideos()},0)});
