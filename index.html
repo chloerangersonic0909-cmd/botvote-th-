@@ -289,7 +289,7 @@ async function authFlow(){
  const email=prompt('กรอกอีเมลที่ใช้งานได้ เพื่อรับลิงก์เข้าสู่ระบบ BotVote');
  if(!email)return;
  const cleanEmail=email.trim();
- if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(cleanEmail)){notify('รูปแบบอีเมลไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง');return}
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)){notify('รูปแบบอีเมลไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง');return}
  try{
   const {error}=await sb.auth.signInWithOtp({
    email:cleanEmail,
