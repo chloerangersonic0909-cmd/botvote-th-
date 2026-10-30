@@ -182,7 +182,35 @@ h1{font-weight:950;letter-spacing:-2.8px}
 <div class="grid" id="grid"></div>
 <div class="safety" id="safety">🔐 <b>ความปลอดภัยต้องมาก่อน</b> — BotVote จะไม่ขอ Bot Token, รหัสผ่าน หรือรหัสลับของคุณ ใช้เฉพาะข้อมูลสาธารณะและลิงก์เชิญ Discord เท่านั้น</div>
 </section>
-<section id="about" class="section" style="padding-top:0"><div class="safety"><b>เกี่ยวกับ BotVote</b><br>พื้นที่ชุมชนสำหรับค้นหาและแนะนำบอท Discord อย่างเป็นระเบียบ เว็บไซต์นี้เป็นไดเรกทอรีชุมชนอิสระ ไม่ใช่เว็บไซต์ทางการของ Discord และไม่ได้รับการรับรองจาก Discord</div></section>
+
+<section class="section" id="videos">
+  <div class="sectionhead">
+    <div><div class="kicker">COMMUNITY VIDEOS</div><h2>🎬 วิดีโอจากชุมชน</h2><p>แชร์วิดีโอ YouTube กดถูกใจ และให้คะแนน 1–5 ดาว</p></div>
+    <div class="counter" id="videoCount">0 วิดีโอ</div>
+  </div>
+  <div class="video-submit" style="border:1px solid var(--line);background:linear-gradient(145deg,#131a2b,#0d111d);border-radius:18px;padding:18px;margin-bottom:20px">
+    <h3 style="margin:0 0 8px">เพิ่มวิดีโอ YouTube</h3>
+    <p class="muted" style="margin:0 0 12px;font-size:13px">เข้าสู่ระบบก่อนส่งวิดีโอ วิดีโอจะปรากฏหลังระบบตรวจสอบ</p>
+    <form id="videoForm" class="toolbar">
+      <input id="videoTitle" class="field" maxlength="100" placeholder="ชื่อวิดีโอ" required>
+      <input id="videoUrl" class="field" type="url" placeholder="https://www.youtube.com/watch?v=..." required>
+      <button class="btn" type="submit">ส่งวิดีโอ +</button>
+    </form>
+    <div id="videoNotice" class="muted" style="font-size:12px;margin-top:8px">ระบบวิดีโอใช้ฐานข้อมูล BotVote เดิม</div>
+  </div>
+  <div id="videoGrid" class="grid"><div class="bot"><p class="muted">กำลังโหลดวิดีโอ…</p></div></div>
+</section>
+<style>
+#videoGrid .video-card{min-width:0;border:1px solid var(--line);background:linear-gradient(150deg,#131a2b,#0d111d);border-radius:18px;overflow:hidden}
+#videoGrid iframe{display:block;width:100%;aspect-ratio:16/9;border:0;background:#05070c}
+#videoGrid .video-info{padding:15px}
+#videoGrid .video-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+#videoGrid .video-actions button{border:1px solid var(--line);border-radius:10px;background:#ffffff08;color:var(--text);padding:8px 10px}
+#videoGrid .video-actions button:disabled{opacity:.55}
+#videoGrid .stars{color:#ffd36b;letter-spacing:2px}
+@media(max-width:760px){#videoGrid.grid{grid-template-columns:1fr}}
+</style>
+\n<section id="about" class="section" style="padding-top:0"><div class="safety"><b>เกี่ยวกับ BotVote</b><br>พื้นที่ชุมชนสำหรับค้นหาและแนะนำบอท Discord อย่างเป็นระเบียบ เว็บไซต์นี้เป็นไดเรกทอรีชุมชนอิสระ ไม่ใช่เว็บไซต์ทางการของ Discord และไม่ได้รับการรับรองจาก Discord</div></section>
 </main>
 <footer class="footer"><div class="wrap"><div class="footrow"><div><div class="footbrand">B<span>otVote</span> <span style="color:var(--muted);font-weight:500">/ Official Site</span></div><div>Discover bots. Build better communities.</div></div><a class="open" href="#explore">กลับไปสำรวจ ↑</a></div><div class="footnote">BotVote เป็นไดเรกทอรีชุมชนอิสระ รายการบอทและคะแนนถูกใจใช้ฐานข้อมูล Supabase ตามการตั้งค่าของโปรเจกต์ บอทที่ส่งเข้ามาจะปรากฏต่อสาธารณะหลังผู้ดูแลอนุมัติ</div></div></footer>
 <div class="modalback" id="modalback" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><div class="modalhead"><div><div class="kicker">JOIN THE DIRECTORY</div><h2 id="modalTitle">แนะนำบอทของคุณ</h2></div><button class="close" type="button" id="closeModal" aria-label="ปิดหน้าต่าง">×</button></div><p>แบ่งปันข้อมูลสาธารณะเพื่อให้คนอื่นค้นพบบอทของคุณ ไม่ต้องกรอก Token</p>
@@ -295,7 +323,41 @@ $('grid').addEventListener('click',async e=>{
  if(error){if(error.code==='23505'){voted.add(b.id);notify('คุณกดใจบอทนี้ไปแล้ว')}else notify('กดใจไม่สำเร็จ: '+error.message);await loadBots();return}
  voted.add(b.id);notify('ส่งคะแนนถูกใจแล้ว');await loadBots()
 });
-async function init(){
+
+/* Community video feature. Requires the video tables migration in supabase/video-voting.sql. */
+const youtubeId = value => { try { const u=new URL(value); if(u.hostname==='youtu.be') return u.pathname.slice(1).split('/')[0]; if(['youtube.com','www.youtube.com','m.youtube.com'].includes(u.hostname)) { if(u.pathname==='/watch') return u.searchParams.get('v'); const m=u.pathname.match(/^\/(?:embed|shorts)\/([^/?]+)/); return m?m[1]:null; } } catch {} return null; };
+async function loadCommunityVideos(){
+ const grid=$('videoGrid'); if(!grid) return;
+ if(!sb){grid.innerHTML='<div class="bot"><p class="muted">ฐานข้อมูลยังไม่พร้อมใช้งาน</p></div>';return}
+ const {data,error}=await sb.from('botvote_videos').select('id,title,youtube_id,created_at,likes_count,ratings_count,rating_average,status').eq('status','approved').order('created_at',{ascending:false}).limit(30);
+ if(error){grid.innerHTML='<div class="bot"><b>ระบบวิดีโอยังไม่พร้อม</b><p class="muted">ต้องเปิดใช้โครงสร้างฐานข้อมูลวิดีโอใน Supabase ก่อน จึงจะบันทึกยอดถูกใจและคะแนนจริงได้</p></div>';return}
+ $('videoCount').textContent=(data||[]).length+' วิดีโอ';
+ if(!data?.length){grid.innerHTML='<div class="bot"><b>ยังไม่มีวิดีโอ</b><p class="muted">วิดีโอที่ส่งเข้ามาจะแสดงที่นี่หลังได้รับอนุมัติ</p></div>';return}
+ grid.innerHTML=data.map(v=>'<article class="video-card"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/'+esc(v.youtube_id)+'" title="'+esc(v.title)+'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><div class="video-info"><b>'+esc(v.title)+'</b><p class="muted" style="font-size:12px;margin:5px 0">⭐ '+Number(v.rating_average||0).toFixed(1)+' / 5 · '+Number(v.ratings_count||0)+' คะแนน</p><div class="video-actions"><button type="button" data-video-like="'+esc(v.id)+'">❤️ ถูกใจ · '+Number(v.likes_count||0)+'</button><select aria-label="ให้คะแนนวิดีโอ" data-video-rating="'+esc(v.id)+'" class="field" style="width:auto;min-width:110px;padding:8px"><option value="">ให้คะแนน</option><option value="1">⭐ 1</option><option value="2">⭐ 2</option><option value="3">⭐ 3</option><option value="4">⭐ 4</option><option value="5">⭐ 5</option></select></div></div></article>').join('');
+}
+$('videoForm')?.addEventListener('submit',async e=>{
+ e.preventDefault(); if(!sb){notify('ฐานข้อมูลไม่พร้อม');return} if(!session){notify('กรุณาเข้าสู่ระบบก่อนส่งวิดีโอ');authFlow();return}
+ const title=$('videoTitle').value.trim(),id=youtubeId($('videoUrl').value.trim());
+ if(!id){notify('กรุณาใส่ลิงก์ YouTube ที่ถูกต้อง');return}
+ const {error}=await sb.from('botvote_videos').insert({title,youtube_id:id,owner_id:session.user.id,status:'pending'});
+ if(error){notify('ส่งวิดีโอไม่สำเร็จ: '+error.message);return}
+ e.target.reset();notify('ส่งวิดีโอแล้ว รออนุมัติก่อนเผยแพร่'); 
+});
+$('videoGrid')?.addEventListener('click',async e=>{
+ const b=e.target.closest('[data-video-like]'); if(!b)return;
+ if(!session){notify('เข้าสู่ระบบก่อนกดถูกใจ');authFlow();return}
+ b.disabled=true; const {error}=await sb.from('botvote_video_likes').insert({video_id:b.dataset.videoLike,user_id:session.user.id});
+ if(error)notify(error.code==='23505'?'คุณกดถูกใจวิดีโอนี้ไปแล้ว':'กดถูกใจไม่สำเร็จ: '+error.message); else notify('บันทึกยอดถูกใจแล้ว');
+ await loadCommunityVideos();
+});
+$('videoGrid')?.addEventListener('change',async e=>{
+ const el=e.target.closest('[data-video-rating]');if(!el||!el.value)return;
+ if(!session){el.value='';notify('เข้าสู่ระบบก่อนให้คะแนน');authFlow();return}
+ const {error}=await sb.from('botvote_video_ratings').upsert({video_id:el.dataset.videoRating,user_id:session.user.id,rating:Number(el.value)},{onConflict:'video_id,user_id'});
+ if(error)notify('บันทึกคะแนนไม่สำเร็จ: '+error.message);else notify('บันทึกคะแนนแล้ว ขอบคุณครับ');
+ await loadCommunityVideos();
+});
+\nasync function init(){
  if(!sb){render();notify('ขั้นตอนต่อไป: เพิ่ม Supabase anon/publishable key ใน index.html');return}
  const {data}=await sb.auth.getSession();session=data.session;updateAuth();
  sb.auth.onAuthStateChange((_event,newSession)=>{session=newSession;updateAuth();setTimeout(loadBots,0)});
