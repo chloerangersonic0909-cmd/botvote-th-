@@ -382,7 +382,7 @@ $('videoGrid').addEventListener('change',async e=>{
  notify('บันทึกคะแนน '+rating+'/5 แล้ว');await loadCommunityVideos();
 });
 \nasync function init(){
- if(!sb){render();notify('ขั้นตอนต่อไป: เพิ่ม Supabase anon/publishable key ใน index.html');return}
+ if(!sb){render();loadCommunityVideos();notify('ขั้นตอนต่อไป: เพิ่ม Supabase anon/publishable key ใน index.html');return}
  const {data}=await sb.auth.getSession();session=data.session;updateAuth();
  sb.auth.onAuthStateChange((_event,newSession)=>{session=newSession;updateAuth();setTimeout(loadBots,0)});
  await loadBots()
