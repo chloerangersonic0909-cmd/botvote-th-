@@ -240,7 +240,7 @@ h1{font-weight:950;letter-spacing:-2.8px}
 const SUPABASE_URL='https://crgjfdbdccpqumqaiuyq.supabase.co';
 const SUPABASE_ANON_KEY='sb_publishable_DuR9mJQlYCqCGBwF3W0JbQ_8CdqJr9H';
 const configured=SUPABASE_ANON_KEY!=='PASTE_YOUR_SUPABASE_ANON_KEY_HERE';
-const AUTH_REDIRECT_URL='https://chloerangersonic0909-cmd.github.io/botvote-th-/';
+const AUTH_REDIRECT_URL=window.location.origin+window.location.pathname;
 let sb=null;
 try{
  if(configured&&window.supabase){
@@ -424,10 +424,21 @@ $('videoGrid').addEventListener('change',async e=>{
 });
 
 async function init(){
- if(!sb){render();loadCommunityVideos();notify('ขั้นตอนต่อไป: เพิ่ม Supabase anon/publishable key ใน index.html');return}
- const {data}=await sb.auth.getSession();session=data.session;updateAuth();
- sb.auth.onAuthStateChange((_event,newSession)=>{session=newSession;updateAuth();setTimeout(()=>{loadBots();loadCommunityVideos()},0)});
- await loadBots();await loadCommunityVideos()
+ if(!sb){render();loadCommunityVideos();notify('ระบบเข้าสู่ระบบยังเริ่มไม่ได้ กรุณาตรวจสอบการเชื่อมต่อ Supabase');return}
+ try{
+  const callbackParams=new URLSearchParams(window.location.hash.replace(/^#/,''));
+  const callbackError=callbackParams.get('error_description')||callbackParams.get('error');
+  if(callbackError)notify('เข้าสู่ระบบไม่สำเร็จ: '+callbackError.replace(/\+/g,' '));
+  const {data,error}=await sb.auth.getSession();
+  if(error)notify('ตรวจสอบเซสชันไม่สำเร็จ: '+error.message);
+  session=data?.session||null;updateAuth();
+  sb.auth.onAuthStateChange((_event,newSession)=>{session=newSession;updateAuth();setTimeout(()=>{loadBots();loadCommunityVideos()},0)});
+  await loadBots();await loadCommunityVideos()
+ }catch(error){
+  console.error('BotVote startup/auth callback error:',error);
+  notify('เริ่มระบบไม่สำเร็จ กรุณารีเฟรชหน้าเว็บแล้วลองเข้าสู่ระบบอีกครั้ง');
+  updateAuth()
+ }
 }
 init();
 </script>
