@@ -360,7 +360,7 @@ $('videoGrid')?.addEventListener('change',async e=>{
 \nasync function init(){
  if(!sb){render();notify('ขั้นตอนต่อไป: เพิ่ม Supabase anon/publishable key ใน index.html');return}
  const {data}=await sb.auth.getSession();session=data.session;updateAuth();
- sb.auth.onAuthStateChange((_event,newSession)=>{session=newSession;updateAuth();setTimeout(loadBots,0)});
+ sb.auth.onAuthStateChange((_event,newSession)=>{session=newSession;updateAuth();setTimeout(()=>{loadBots();loadCommunityVideos()},0)});
  await loadBots()
 }
 init();
