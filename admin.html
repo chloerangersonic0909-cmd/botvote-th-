@@ -25,6 +25,26 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   .btn{white-space:normal;overflow-wrap:anywhere}
 }
 
+/* Admin console — moderation workspace styling */
+:root{--bg:#070912;--line:#28324a;--cyan:#6be7ff;--muted:#9caac4}
+body{background:radial-gradient(900px 420px at 80% -150px,#35418b66,transparent 75%),radial-gradient(600px 400px at 0 500px,#0b64702b,transparent 75%),#070912}
+header{background:#080a12ed;border-bottom:1px solid #28324a}
+.wrap{width:min(1120px,calc(100% - 32px))}
+.brand{letter-spacing:-.6px}
+.card{border:1px solid #29334b;background:linear-gradient(155deg,#151c2e,#0b0f1b);border-radius:21px;box-shadow:0 20px 55px #0003;padding:clamp(16px,3vw,26px)}
+h1{letter-spacing:-1.3px;font-weight:950}
+.stats{gap:10px}
+.stat{background:#0b1020;border-color:#29334b;border-radius:15px;padding:15px}
+.stat strong{font-size:28px}
+.toolbar{padding:11px;background:#0b1020;border:1px solid #29334b;border-radius:15px}
+.toolbar input,.toolbar select{background:#080d18;border-color:#2b3650;border-radius:12px}
+.item{background:#0b1020;border-color:#29334b;border-radius:15px;padding:16px}
+.actions{gap:9px}
+.approve,.reject{border-radius:11px}
+.notice{background:linear-gradient(110deg,#0d2935,#17152c);border-color:#2a485c;border-radius:14px}
+a{font-weight:750}
+@media(max-width:600px){.wrap{width:calc(100% - 24px)}.card{border-radius:17px}.toolbar{padding:10px}.item .row{align-items:flex-start}.actions .btn{flex:1}}
+
 </style></head><body><header><div class="wrap row"><div class="brand">B<span style="color:white">ot</span><b>Vote</b> <small class="muted">/ Admin</small></div><div class="row"><a href="./">เว็บหลัก</a><button class="btn ghost" id="auth">เข้าสู่ระบบ</button></div></div></header><main class="wrap"><section class="card"><h1>Admin Dashboard</h1><p class="muted">จัดการคำขอและสถิติ BotVote</p><div id="state" class="notice">กำลังตรวจสอบสิทธิ์…</div></section><div id="dash" class="hidden"><section class="card stats"><div class="stat">บอททั้งหมด<strong id="total">0</strong></div><div class="stat">รออนุมัติ<strong id="pending">0</strong></div><div class="stat">อนุมัติแล้ว<strong id="approved">0</strong></div><div class="stat">ยอดถูกใจ<strong id="likes">0</strong></div></section><section class="card"><h2>คำขอเพิ่มบอท</h2><div class="toolbar"><input id="search" placeholder="ค้นหาชื่อหรือ Client ID"><select id="filter"><option value="all">ทุกสถานะ</option><option value="pending">รออนุมัติ</option><option value="approved">อนุมัติแล้ว</option><option value="rejected">ไม่อนุมัติ</option></select><button class="btn ghost" id="refresh">รีเฟรช</button></div><div id="list"></div></section></div><section class="card"><h2>ตั้งค่าสิทธิ์ก่อนใช้งาน</h2><p class="muted">ต้องรัน SQL migration และกำหนด app_metadata.role = admin ให้บัญชีผู้ดูแลก่อน ปุ่มอนุมัติจะใช้งานไม่ได้หาก RLS ไม่อนุญาต</p><a href="https://github.com/chloerangersonic0909-cmd/botvote-th-/blob/main/supabase/admin-rls.sql">เปิดไฟล์ SQL ตั้งค่าสิทธิ์ ↗</a> · <a href="https://supabase.com/dashboard/project/crgjfdbdccpqumqaiuyq/sql/new">Supabase SQL Editor ↗</a></section></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
 const sb=window.supabase.createClient('https://crgjfdbdccpqumqaiuyq.supabase.co','sb_publishable_DuR9mJQlYCqCGBwF3W0JbQ_8CdqJr9H');let session=null,rows=[];const $=x=>document.getElementById(x),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const label=s=>({pending:'รออนุมัติ',approved:'อนุมัติแล้ว',rejected:'ไม่อนุมัติ'}[s]||s);
