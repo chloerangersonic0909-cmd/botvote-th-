@@ -89,17 +89,21 @@ $$;
 
 create or replace function public.botvote_video_likes_count_trigger()
 returns trigger language plpgsql security definer set search_path = public as $$
+declare target_id uuid;
 begin
-  perform public.botvote_refresh_video_counts(coalesce(new.video_id, old.video_id));
-  return coalesce(new, old);
+  if tg_op = 'DELETE' then target_id := old.video_id; else target_id := new.video_id; end if;
+  perform public.botvote_refresh_video_counts(target_id);
+  if tg_op = 'DELETE' then return old; else return new; end if;
 end;
 $$;
 
 create or replace function public.botvote_video_ratings_count_trigger()
 returns trigger language plpgsql security definer set search_path = public as $$
+declare target_id uuid;
 begin
-  perform public.botvote_refresh_video_counts(coalesce(new.video_id, old.video_id));
-  return coalesce(new, old);
+  if tg_op = 'DELETE' then target_id := old.video_id; else target_id := new.video_id; end if;
+  perform public.botvote_refresh_video_counts(target_id);
+  if tg_op = 'DELETE' then return old; else return new; end if;
 end;
 $$;
 
