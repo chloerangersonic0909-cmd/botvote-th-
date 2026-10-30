@@ -157,12 +157,26 @@ h1{font-weight:950;letter-spacing:-2.8px}
 .aiwizard{border:1px solid #35415f;border-radius:17px;padding:16px;background:linear-gradient(145deg,#0d1827,#111027);margin:16px 0}
 .aihead{display:flex;align-items:center;gap:10px;margin-bottom:12px}.aiicon{display:grid;place-items:center;width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,#62e6ff,#a68cff);color:#07101a;font-size:21px}.aihead b,.aihead small{display:block}.aihead small{font-size:11px;color:var(--muted)}.aistatus{margin-left:auto;color:var(--cyan);font-size:9px;letter-spacing:.8px;border:1px solid #62e6ff38;border-radius:99px;padding:5px 7px}.aiprogress{height:4px;background:#ffffff12;border-radius:99px;overflow:hidden;margin:10px 0 14px}.aiprogress span{display:block;width:20%;height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));transition:width .25s}.aimessages{display:grid;gap:8px;margin-bottom:14px}.aimsg{padding:11px 12px;border-radius:12px;font-size:13px;overflow-wrap:anywhere}.botmsg{background:#ffffff08;border:1px solid #ffffff10;color:#dce5fa}.usermsg{justify-self:end;max-width:90%;background:#183143;border:1px solid #62e6ff30;color:#f4fbff}.aiform label{font-size:13px;font-weight:800;display:block;margin-bottom:8px}.aiform .field{margin:0}.aiactions{display:flex;justify-content:space-between;gap:10px;margin-top:12px}.aiactions .btn{min-width:112px}.aiconfirm{background:#ffffff06;border:1px solid #35415f;border-radius:13px;padding:13px;font-size:13px;overflow-wrap:anywhere}.aiconfirm dl{display:grid;grid-template-columns:110px minmax(0,1fr);gap:7px;margin:10px 0}.aiconfirm dt{color:var(--muted)}.aiconfirm dd{margin:0;overflow-wrap:anywhere}.aiconfirm .aiactions{justify-content:flex-end}.aiprocess{display:grid;justify-items:center;text-align:center;gap:9px;padding:24px 10px;color:var(--muted);font-size:12px}.aiprocess b{font-size:14px;color:var(--text)}.aipulse{font-size:36px;color:var(--cyan);animation:aipulse 1s ease-in-out infinite alternate}.indeterminate{width:35%;animation:aimove 1.1s ease-in-out infinite alternate}.airesult{border:1px solid #2b6d61;background:#0b2726;border-radius:13px;padding:14px;font-size:13px}.aihint{color:var(--muted);font-size:11px;margin-top:12px}.aiwizard .hidden{display:none!important}@keyframes aipulse{from{transform:scale(.88);opacity:.55}to{transform:scale(1.08);opacity:1}}@keyframes aimove{from{transform:translateX(-80%)}to{transform:translateX(180%)}}@media(max-width:560px){.aiwizard{padding:13px}.aiconfirm dl{grid-template-columns:1fr;gap:2px}.aiconfirm dd{margin-bottom:7px}.aiactions .btn{flex:1;min-width:0}}
 
+
+/* Community video voting */
+.video-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.video-card{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:linear-gradient(155deg,#151c30,#0b0f1b)}
+.video-frame{width:100%;aspect-ratio:16/9;border:0;display:block;background:#05070d}
+.video-body{padding:15px}.video-title{font-size:15px;font-weight:850;margin:0 0 8px;overflow-wrap:anywhere}
+.video-meta{font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+.video-actions{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.video-actions .field{width:auto;min-width:105px;flex:1;padding:8px}
+.video-status{color:#ffd68a;font-size:11px;margin-top:8px}
+.video-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:9px;margin:16px 0 22px;padding:14px;border:1px solid var(--line);border-radius:16px;background:#0d1220}
+.video-note{font-size:12px;color:var(--muted);margin-top:8px}
+@media(max-width:850px){.video-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.video-grid{grid-template-columns:1fr}.video-form{grid-template-columns:1fr}.video-form .btn{width:100%}}
 </style>
 </head>
 <body>
 <header class="top"><div class="wrap nav">
 <a class="brand" href="#" aria-label="BotVote หน้าแรก"><span class="logo">B</span><span style="color:var(--text)">Bot<span>Vote</span></span></a>
-<nav class="navlinks" aria-label="เมนูหลัก"><a href="#explore">สำรวจบอท</a><a href="#about">เกี่ยวกับเรา</a><a href="#safety">ความปลอดภัย</a></nav>
+<nav class="navlinks" aria-label="เมนูหลัก"><a href="#explore">สำรวจบอท</a><a href="#videos">วิดีโอ</a><a href="#about">เกี่ยวกับเรา</a><a href="#safety">ความปลอดภัย</a></nav>
 <div style="display:flex;gap:8px;align-items:center"><button class="btn ghost" id="authBtn">เข้าสู่ระบบ</button><button class="btn" id="openAdd">＋ ส่งบอทเข้าร่วม</button></div>
 </div></header>
 <main class="wrap">
@@ -182,7 +196,18 @@ h1{font-weight:950;letter-spacing:-2.8px}
 <div class="grid" id="grid"></div>
 <div class="safety" id="safety">🔐 <b>ความปลอดภัยต้องมาก่อน</b> — BotVote จะไม่ขอ Bot Token, รหัสผ่าน หรือรหัสลับของคุณ ใช้เฉพาะข้อมูลสาธารณะและลิงก์เชิญ Discord เท่านั้น</div>
 </section>
-<section id="about" class="section" style="padding-top:0"><div class="safety"><b>เกี่ยวกับ BotVote</b><br>พื้นที่ชุมชนสำหรับค้นหาและแนะนำบอท Discord อย่างเป็นระเบียบ เว็บไซต์นี้เป็นไดเรกทอรีชุมชนอิสระ ไม่ใช่เว็บไซต์ทางการของ Discord และไม่ได้รับการรับรองจาก Discord</div></section>
+
+<section class="section" id="videos">
+ <div class="sectionhead"><div><div class="kicker">COMMUNITY VIDEOS</div><h2>🎬 วิดีโอจากชุมชน</h2><p>แบ่งปันวิดีโอ YouTube กดถูกใจ และให้คะแนน 1–5 ดาว</p></div><div class="counter" id="videoCount">0 วิดีโอ</div></div>
+ <form id="videoSubmitForm" class="video-form">
+  <input id="videoTitle" class="field" maxlength="100" required placeholder="ชื่อวิดีโอ (ไม่เกิน 100 ตัวอักษร)" aria-label="ชื่อวิดีโอ">
+  <input id="videoUrl" class="field" type="url" required placeholder="ลิงก์ YouTube" aria-label="ลิงก์ YouTube">
+  <button class="btn" type="submit">＋ ส่งวิดีโอ</button>
+ </form>
+ <div class="video-note">วิดีโอที่ส่งใหม่จะรอการอนุมัติก่อนเผยแพร่ ต้องเข้าสู่ระบบก่อนส่ง กดถูกใจ หรือให้คะแนน</div>
+ <div id="videoGrid" class="video-grid"><div class="empty"><strong>กำลังโหลดวิดีโอ…</strong></div></div>
+</section>
+\n<section id="about" class="section" style="padding-top:0"><div class="safety"><b>เกี่ยวกับ BotVote</b><br>พื้นที่ชุมชนสำหรับค้นหาและแนะนำบอท Discord อย่างเป็นระเบียบ เว็บไซต์นี้เป็นไดเรกทอรีชุมชนอิสระ ไม่ใช่เว็บไซต์ทางการของ Discord และไม่ได้รับการรับรองจาก Discord</div></section>
 </main>
 <footer class="footer"><div class="wrap"><div class="footrow"><div><div class="footbrand">B<span>otVote</span> <span style="color:var(--muted);font-weight:500">/ Official Site</span></div><div>Discover bots. Build better communities.</div></div><a class="open" href="#explore">กลับไปสำรวจ ↑</a></div><div class="footnote">BotVote เป็นไดเรกทอรีชุมชนอิสระ รายการบอทและคะแนนถูกใจใช้ฐานข้อมูล Supabase ตามการตั้งค่าของโปรเจกต์ บอทที่ส่งเข้ามาจะปรากฏต่อสาธารณะหลังผู้ดูแลอนุมัติ</div></div></footer>
 <div class="modalback" id="modalback" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><div class="modalhead"><div><div class="kicker">JOIN THE DIRECTORY</div><h2 id="modalTitle">แนะนำบอทของคุณ</h2></div><button class="close" type="button" id="closeModal" aria-label="ปิดหน้าต่าง">×</button></div><p>แบ่งปันข้อมูลสาธารณะเพื่อให้คนอื่นค้นพบบอทของคุณ ไม่ต้องกรอก Token</p>
@@ -295,7 +320,68 @@ $('grid').addEventListener('click',async e=>{
  if(error){if(error.code==='23505'){voted.add(b.id);notify('คุณกดใจบอทนี้ไปแล้ว')}else notify('กดใจไม่สำเร็จ: '+error.message);await loadBots();return}
  voted.add(b.id);notify('ส่งคะแนนถูกใจแล้ว');await loadBots()
 });
-async function init(){
+
+/* Community video submission, likes and ratings */
+function extractYouTubeId(value){
+ try{
+  const u=new URL(value.trim());let id='';
+  if(['youtu.be','www.youtu.be'].includes(u.hostname))id=u.pathname.split('/').filter(Boolean)[0]||'';
+  else if(['youtube.com','www.youtube.com','m.youtube.com'].includes(u.hostname)){
+   if(u.pathname==='/watch')id=u.searchParams.get('v')||'';
+   else if(/^\/(embed|shorts)\//.test(u.pathname))id=u.pathname.split('/')[2]||'';
+  }
+  return /^[A-Za-z0-9_-]{11}$/.test(id)?id:null;
+ }catch{return null}
+}
+function youtubeEmbed(id){return 'https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)}
+async function loadCommunityVideos(){
+ const grid=$('videoGrid');if(!grid)return;
+ if(!sb){grid.innerHTML='<div class="empty"><strong>ยังเชื่อมต่อฐานข้อมูลไม่ได้</strong>ตรวจสอบการตั้งค่า Supabase</div>';return}
+ const {data,error}=await sb.from('botvote_videos').select('id,title,youtube_id,owner_id,status,likes_count,ratings_count,rating_average,created_at').eq('status','approved').order('created_at',{ascending:false});
+ if(error){console.error(error);grid.innerHTML='<div class="empty"><strong>ระบบวิดีโอยังไม่พร้อม</strong>ต้องติดตั้งตารางวิดีโอใน Supabase ก่อนใช้งาน</div>';$('videoCount').textContent='— วิดีโอ';return}
+ const videos=data||[];$('videoCount').textContent=videos.length+' วิดีโอ';
+ let liked=new Set(),ratings=new Map();
+ if(session&&videos.length){
+  const ids=videos.map(v=>v.id);
+  const [likesRes,ratingsRes]=await Promise.all([
+   sb.from('botvote_video_likes').select('video_id').eq('user_id',session.user.id).in('video_id',ids),
+   sb.from('botvote_video_ratings').select('video_id,rating').eq('user_id',session.user.id).in('video_id',ids)
+  ]);
+  if(!likesRes.error)(likesRes.data||[]).forEach(x=>liked.add(x.video_id));
+  if(!ratingsRes.error)(ratingsRes.data||[]).forEach(x=>ratings.set(x.video_id,x.rating));
+ }
+ if(!videos.length){grid.innerHTML='<div class="empty"><strong>ยังไม่มีวิดีโอที่เผยแพร่</strong>ส่งลิงก์ YouTube เพื่อเสนอให้ผู้ดูแลอนุมัติได้เลย</div>';return}
+ grid.innerHTML=videos.map(v=>'<article class="video-card"><iframe class="video-frame" src="'+youtubeEmbed(v.youtube_id)+'" title="'+esc(v.title)+'" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><div class="video-body"><h3 class="video-title">'+esc(v.title)+'</h3><div class="video-meta"><span>♡ '+(v.likes_count||0)+' ถูกใจ</span><span>⭐ '+Number(v.rating_average||0).toFixed(2)+'/5 ('+(v.ratings_count||0)+')</span></div><div class="video-actions"><button type="button" class="vote '+(liked.has(v.id)?'active':'')+'" data-video-like="'+esc(v.id)+'" '+(liked.has(v.id)?'disabled':'')+'>♡ '+(liked.has(v.id)?'ถูกใจแล้ว':'ถูกใจ')+'</button><select class="field" aria-label="ให้คะแนนวิดีโอ" data-video-rating="'+esc(v.id)+'"><option value="">ให้คะแนน…</option>'+[5,4,3,2,1].map(n=>'<option value="'+n+'" '+(ratings.get(v.id)===n?'selected':'')+'>'+('★'.repeat(n))+('☆'.repeat(5-n))+' · '+n+'</option>').join('')+'</select></div></div></article>').join('');
+}
+$('videoSubmitForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ if(!session){notify('เข้าสู่ระบบก่อนส่งวิดีโอ');authFlow();return}
+ const title=$('videoTitle').value.trim(),youtubeId=extractYouTubeId($('videoUrl').value);
+ if(!title||title.length>100){notify('กรอกชื่อวิดีโอ 1–100 ตัวอักษร');return}
+ if(!youtubeId){notify('ลิงก์ YouTube ไม่ถูกต้อง');return}
+ const btn=e.submitter||e.target.querySelector('button[type="submit"]');btn.disabled=true;
+ const {error}=await sb.from('botvote_videos').insert({title,youtube_id:youtubeId,owner_id:session.user.id,status:'pending'});
+ btn.disabled=false;
+ if(error){notify('ส่งวิดีโอไม่สำเร็จ: '+error.message);return}
+ e.target.reset();notify('ส่งวิดีโอแล้ว รอผู้ดูแลอนุมัติ');await loadCommunityVideos();
+});
+$('videoGrid').addEventListener('click',async e=>{
+ const btn=e.target.closest('[data-video-like]');if(!btn)return;
+ if(!session){notify('เข้าสู่ระบบก่อนกดถูกใจ');authFlow();return}
+ btn.disabled=true;
+ const {error}=await sb.from('botvote_video_likes').insert({video_id:btn.dataset.videoLike,user_id:session.user.id});
+ if(error){btn.disabled=false;notify(error.code==='23505'?'คุณกดถูกใจวิดีโอนี้แล้ว':'กดถูกใจไม่สำเร็จ: '+error.message);return}
+ notify('กดถูกใจวิดีโอแล้ว');await loadCommunityVideos();
+});
+$('videoGrid').addEventListener('change',async e=>{
+ const select=e.target.closest('[data-video-rating]');if(!select||!select.value)return;
+ if(!session){select.value='';notify('เข้าสู่ระบบก่อนให้คะแนน');authFlow();return}
+ const rating=Number(select.value);
+ const {error}=await sb.from('botvote_video_ratings').upsert({video_id:select.dataset.videoRating,user_id:session.user.id,rating,updated_at:new Date().toISOString()},{onConflict:'video_id,user_id'});
+ if(error){notify('บันทึกคะแนนไม่สำเร็จ: '+error.message);return}
+ notify('บันทึกคะแนน '+rating+'/5 แล้ว');await loadCommunityVideos();
+});
+\nasync function init(){
  if(!sb){render();notify('ขั้นตอนต่อไป: เพิ่ม Supabase anon/publishable key ใน index.html');return}
  const {data}=await sb.auth.getSession();session=data.session;updateAuth();
  sb.auth.onAuthStateChange((_event,newSession)=>{session=newSession;updateAuth();setTimeout(loadBots,0)});
