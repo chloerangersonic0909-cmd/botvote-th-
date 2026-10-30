@@ -45,6 +45,21 @@ h1{letter-spacing:-1.3px;font-weight:950}
 a{font-weight:750}
 @media(max-width:600px){.wrap{width:calc(100% - 24px)}.card{border-radius:17px}.toolbar{padding:10px}.item .row{align-items:flex-start}.actions .btn{flex:1}}
 
+
+/* Button placement: toolbar controls and moderation actions */
+.toolbar{align-items:center}
+.toolbar #refresh{flex:0 0 auto;white-space:nowrap}
+.actions{align-items:center;justify-content:flex-start}
+.actions .btn{min-width:112px}
+.item>.row{align-items:center}
+@media(max-width:600px){
+ .toolbar{display:grid;grid-template-columns:1fr}
+ .toolbar input,.toolbar select,.toolbar #refresh{width:100%;min-width:0}
+ .actions{display:grid;grid-template-columns:1fr 1fr}
+ .actions .btn{width:100%;min-width:0}
+ header .row>.row{gap:9px}
+}
+
 </style></head><body><header><div class="wrap row"><div class="brand">B<span style="color:white">ot</span><b>Vote</b> <small class="muted">/ Admin</small></div><div class="row"><a href="./">เว็บหลัก</a><button class="btn ghost" id="auth">เข้าสู่ระบบ</button></div></div></header><main class="wrap"><section class="card"><h1>Admin Dashboard</h1><p class="muted">จัดการคำขอและสถิติ BotVote</p><div id="state" class="notice">กำลังตรวจสอบสิทธิ์…</div></section><div id="dash" class="hidden"><section class="card stats"><div class="stat">บอททั้งหมด<strong id="total">0</strong></div><div class="stat">รออนุมัติ<strong id="pending">0</strong></div><div class="stat">อนุมัติแล้ว<strong id="approved">0</strong></div><div class="stat">ยอดถูกใจ<strong id="likes">0</strong></div></section><section class="card"><h2>คำขอเพิ่มบอท</h2><div class="toolbar"><input id="search" placeholder="ค้นหาชื่อหรือ Client ID"><select id="filter"><option value="all">ทุกสถานะ</option><option value="pending">รออนุมัติ</option><option value="approved">อนุมัติแล้ว</option><option value="rejected">ไม่อนุมัติ</option></select><button class="btn ghost" id="refresh">รีเฟรช</button></div><div id="list"></div></section></div><section class="card"><h2>ตั้งค่าสิทธิ์ก่อนใช้งาน</h2><p class="muted">ต้องรัน SQL migration และกำหนด app_metadata.role = admin ให้บัญชีผู้ดูแลก่อน ปุ่มอนุมัติจะใช้งานไม่ได้หาก RLS ไม่อนุญาต</p><a href="https://github.com/chloerangersonic0909-cmd/botvote-th-/blob/main/supabase/admin-rls.sql">เปิดไฟล์ SQL ตั้งค่าสิทธิ์ ↗</a> · <a href="https://supabase.com/dashboard/project/crgjfdbdccpqumqaiuyq/sql/new">Supabase SQL Editor ↗</a></section></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
 const sb=window.supabase.createClient('https://crgjfdbdccpqumqaiuyq.supabase.co','sb_publishable_DuR9mJQlYCqCGBwF3W0JbQ_8CdqJr9H');let session=null,rows=[];const $=x=>document.getElementById(x),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const label=s=>({pending:'รออนุมัติ',approved:'อนุมัติแล้ว',rejected:'ไม่อนุมัติ'}[s]||s);
